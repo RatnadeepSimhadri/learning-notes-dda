@@ -1166,9 +1166,23 @@ something called snapshot isolation, which is a weaker guarantee than serializab
 
 * **Durability.** Once a transaction has committed successfully, any data it has written will not be forgotten, even if there is a hardware fault or the database crashes. In a single-node database this means the data has been written to nonvolatile storage. In a replicated database it means the data has been successfully copied to some number of nodes.
 
-Atomicity can be implemented using a log for crash recovery, and isolation can be implemented using a lock on each object, allowing only one thread to access an object at any one time.
+
 
 **A transaction is a mechanism for grouping multiple operations on multiple objects into one unit of execution.**
+
+#### Handling Single Object and Multi Object Writes 
+
+![image](https://user-images.githubusercontent.com/9788837/191606041-788d4b37-7087-4533-ae93-3f2cf10d1bfe.png)
+**_Isolation Violation_**
+
+![image](https://user-images.githubusercontent.com/9788837/191606319-40a5d994-a3b1-4b39-844b-650b49ed0afb.png)
+**_Need for Atomicity_**
+
+Atomicity can be implemented using a log for crash recovery, and isolation can be implemented using a lock on each object, allowing only one thread to access an object at any one time. 
+
+[**Compare and Set**](https://learning.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/ch07.html#sec_transactions_compare_and_set)
+
+Single Objects Operations are useful to prevent lost udpates when several clients are writing to the same object concurrently
 
 #### Handling errors and aborts
 
@@ -1178,13 +1192,21 @@ In datastores with leaderless replication is the application's responsibility to
 
 The whole point of aborts is to enable safe retries.
 
+[**Two Phase Commits**](https://learning.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/ch09.html#sec_consistency_2pc)
+
 ### Weak isolation levels
+
+There are two types of Isolation **Serializable Isolation** : Achieved through Locks  and **Transaction Isolation** 
+
+**SI** has performance costs thus some systems adopt weaker Isolation levels
 
 Concurrency issues (race conditions) come into play when one transaction reads data that is concurrently modified by another transaction, or when two transactions try to simultaneously modify the same data.
 
 Databases have long tried to hide concurrency issues by providing _transaction isolation_.
 
 In practice, is not that simple. Serializable isolation has a performance cost. It's common for systems to use weaker levels of isolation, which protect against _some_ concurrency issues, but not all.
+
+>Concurrency bugs caused by weak transaction isolation are not just a theoretical problem. They have caused substantial loss of money [24, 25], led to investigation by financial auditors [26], and caused customer data to be corrupted [27]. A popular comment on revelations of such problems is “Use an ACID database if you’re handling financial data!”—but that misses the point. Even many popular relational database systems (which are usually considered “ACID”) use weak isolation, so they wouldn’t necessarily have prevented these bugs from occurring.
 
 Weak isolation levels used in practice:
 
