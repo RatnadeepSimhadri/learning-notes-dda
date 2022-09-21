@@ -1151,7 +1151,19 @@ The application is free to ignore certain potential error scenarios and concurre
 
 * **Atomicity.** Is _not_ about concurrency. It is what happens if a client wants to make several writes, but a fault occurs after some of the writes have been processed. _Abortability_ would have been a better term than _atomicity_.
 * **Consistency.** _Invariants_ on your data must always be true. The idea of consistency depends on the application's notion of invariants. Atomicity, isolation, and durability are properties of the database, whereas consistency (in an ACID sense) is a property of the application.
+
+>In an accounting system, credits and debits across all accounts must always be balanced. If a transaction starts with a
+database that is valid according to these invariants, and any writes during the transaction preserve the validity, then you can be sure that the invariants are always satisfied.
+
 * **Isolation.** Concurrently executing transactions are isolated from each other. It's also called _serializability_, each transaction can pretend that it is the only transaction running on the entire database, and the result is the same as if they had run _serially_ (one after the other).
+
+![image](https://user-images.githubusercontent.com/9788837/191599661-d41bb001-70c2-4b6b-9e05-33faf138b7e2.png)
+
+> However, in practice, serializable isolation is rarely used, because it carries a performance
+penalty. Some popular databases, such as Oracle 11g, don’t even implement it.
+In Oracle there is an isolation level called “serializable,” but it actually implements
+something called snapshot isolation, which is a weaker guarantee than serializability
+
 * **Durability.** Once a transaction has committed successfully, any data it has written will not be forgotten, even if there is a hardware fault or the database crashes. In a single-node database this means the data has been written to nonvolatile storage. In a replicated database it means the data has been successfully copied to some number of nodes.
 
 Atomicity can be implemented using a log for crash recovery, and isolation can be implemented using a lock on each object, allowing only one thread to access an object at any one time.
